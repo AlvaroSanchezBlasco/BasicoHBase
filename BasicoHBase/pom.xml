@@ -46,7 +46,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>com.utad.master.hbase.ImportMetricaTS</mainClass>
+							<mainClass>com.basico.hbase.util.ImportMetrica</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
