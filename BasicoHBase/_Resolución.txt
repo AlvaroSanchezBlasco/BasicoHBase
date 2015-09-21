@@ -1,0 +1,30 @@
+Un modelo que se base únicamente en la Row Key es suficiente para solucionar el problema.
+
+Para trabajar de forma más sencilla, añado el fichero a importar a la carpeta /data de mi proyecto Java, y leo directamente de ese directorio el fichero a importar.
+
+Lo primero que hago es identificar los campos del fichero csv original, para crear mi clase de utilidades que importe los datos a HBase. 
+
+Veo que los datos que me pueden interesar, para hacer el modelo funcional y escalable son:
+	- El mercado de valores que leemos.
+	- El modelo estadístico que utilicemos para obtener las probabilidades de desplome.
+	- La fecha de cada registro a importar.
+	- El nombre de la empresa.
+	- Los valores de apertura y cierre.
+
+Con estos datos, compongo un modelo de la siguiente forma:
+	- Row Key: <mercado>/<modelo_probabilistico>/<fecha_registro>/<num_secuencial>
+	El número secuencial hará única mi clave. He optado por que sea de tipo float, por la precisión que ofrece.
+	- Column Family: <modelo_probabilistico>
+	De esta manera, por cada modelo que necesitemos cargar, estará diferenciado (aunque también aparece en la RK).
+	- Qualifier: <empresa>/<probabilidad_desplome>
+	- Value: <empresa>/<probabilidad_desplome>
+
+Guardaré, de cada registro leído, la empresa y la probabilidad de desplome, ya calculada según se indica en los requisitos.
+
+Una vez formateados los datos e importados a HBase, realizo un programa que estime el riesgo de desplome en una fecha dada. 
+
+Haber compuesto la RK con la fecha, es para poder realizar la consulta directamente con un StartRow y un StopRow, y añadiendo el Column Family al filtro.
+
+Actualmente, sólo se tiene en cuenta como parámetro de entrada la fecha en la que se desea saber el máximo riesgo de desplome, y qué empresa/s son las afectadas, 
+pero cambiando el valor constante del mercado, y del modelo probabilístico, y añadiendo dichos datos como parámetros de entrada, nuestro modelo puede escalar
+perfectamente a más información, siendo igual de eficiente, al mantener una consulta por RK.

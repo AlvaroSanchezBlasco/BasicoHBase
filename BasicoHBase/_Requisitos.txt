@@ -1,0 +1,58 @@
+Caso de Uso
+-----------
+Un cliente nos ha hecho una peticion que nos obliga a modificar la funcionalidad de nuestro servicio de estadísticas del NASDAQ
+Los usuarios de este servicio necesitan, dada una fecha, encontrar la empresa con maximo riesgo de desplome
+
+Datos de los que disponemos
+---------------------------
+1. Conjunto de datos del NASDAQ (data\NASDAQ_daily_prices_subset.csv)
+2. El día concreto lo introduce el usuario en un formulario
+3. Nuestros data scientists han elaborado un modelo estadístico que relaciona la diferencia de cotización (open-close) con el riesgo de desplome
+
+   Tabla de probabilidades de desplome de la cotización dado un valor de open-close
+		open-close < 0 => probabilidad = 0
+		open-close 0 - 10 => probabilidad = 0.2
+		open-close 10 - 20 => probabilidad = 0.5
+		open-close > 20 => probabilidad = 0.9
+
+Funcionalidad que ofrece el servicio
+-----------------------------
+1. El usuario introduce la fecha
+2. Al usuario se le muestra en la pantalla la empresa con maximo riesgo de desplome y su probabilidad 
+
+Secuencia de pasos
+------------------
+
+1. Elegir un modelo de datos a partir de los 4 siguientes, o crear uno nuevo.
+
+	Modelo 1
+	--------
+	Rowkey: <empresa>
+	Column Family: price, totals
+	Qualifier: <metrica>
+
+	Modelo 2
+	--------
+	Rowkey: <empresa>/<timestamp>
+	Column Family: price, totals
+	Qualifier: <metrica>
+
+	Modelo 3
+	--------
+	Rowkey: <metrica>/<timestamp>
+	Column Family: price, totals
+	Qualifier: <empresa>
+
+	Modelo 4
+	--------
+	Rowkey: <empresa>/<metrica>/<timestamp>
+	Column Family: price, totals
+	Qualifier: value
+
+2. Transformar e importar los datos
+
+3. Definir la secuencia lógica de acciones para obtener el resultado
+
+4. Implementar el programa
+
+5. Probar
